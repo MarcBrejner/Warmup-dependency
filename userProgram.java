@@ -6,7 +6,7 @@ class userProgram {
         int primesToFind;
         List<Task> futures = new ArrayList<Task>(){};
 
-        BagOfTasks bag = new BagOfTasks(2);
+        BagOfTasks bag = new BagOfTasks(2, 3);
 
         Task t1 = new primeTask(1);
         Task t2 = new primeTask(2);

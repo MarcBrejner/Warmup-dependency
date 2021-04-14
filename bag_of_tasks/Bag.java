@@ -5,13 +5,14 @@ import java.util.concurrent.*;
 
 class Bag {
 
-    protected HashMap<Task,Task> dependencies;
+    protected Graph dependencies;
     private BlockingQueue<Task> taskBag;
     private List<Worker> workers;
 
-    protected Bag(int numberOfWorkers){
+    protected Bag(int numberOfWorkers, int graphSize){
         this.taskBag = new LinkedBlockingQueue<Task>(){};
         this.workers = new ArrayList<Worker>(){};
+        this.dependencies = new Graph(graphSize);
         for (int i = 0; i < numberOfWorkers; ++i) {
             Worker worker = new Worker(this);
             worker.start();
@@ -22,9 +23,7 @@ class Bag {
     protected void addTask(Task task, Task[] deps) {
         try {
             taskBag.put(task);
-            for(Task t : deps){
-                dependencies.put(task, t);
-            }
+            dependencies.addDependency(task, deps);
         } catch (InterruptedException e) {}
     }
 
@@ -33,7 +32,7 @@ class Bag {
         try {
             while(true) {
                 task = taskBag.take();
-                if (dependencies.containsKey(task)) {
+                if (dependencies.hasDependencies(task)) {
                     taskBag.put(task);
                 }else{
                     break;
@@ -60,7 +59,7 @@ class Worker extends Thread {
             System.out.println("Started working on a task");
 
             task.run();
-            while(bag.dependencies.values().remove(task));
+            bag.dependencies.removeTask(task);
 
         }
     }
