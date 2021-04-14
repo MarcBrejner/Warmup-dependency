@@ -8,11 +8,11 @@ public class Graph {
     int count;
     LinkedList<LinkedList<Task>> dependants;
 
-    public Graph(int vertices) {
+    public Graph() {
         dependants = new LinkedList<>();
     }
 
-    public void addDependency(Task dependant, Task[] dependencies) {
+    public synchronized void addDependency(Task dependant, Task[] dependencies) {
         int index = dependants.indexOf(dependant);                      // get the index of the task, if it doesn't exist return -1
         if (index != -1)  {                                             // The dependant already exists
             dependants.get(index).addAll(Arrays.asList(dependencies));  // Add all dependencies to the existing dependant
@@ -23,19 +23,25 @@ public class Graph {
         }
     }
 
-    public void removeTask(Task task) {
+    public synchronized void removeTask(Task task) {
         // Outer linked list
         for (int outer = 0; outer < dependants.size(); outer++) {
             // Inner linked list
-            for (int inner = 0; inner < dependants.get(inner).size(); inner++) {
-                if (dependants.get(outer).get(inner) == task) {
+            for (int inner = 0; inner < dependants.get(outer).size(); inner++) {
+                if (dependants.get(outer).get(inner) == task && inner == 0){
+                    dependants.remove(outer);
+                } else if (dependants.get(outer).get(inner) == task) {
                     dependants.get(outer).remove(inner);
+                    if(dependants.get(outer).size() >= 1){
+                        dependants.remove(outer);
+                        break;
+                    }
                 }
             }
         }
     }
 
-    public boolean hasDependencies(Task t) {
+    public synchronized boolean hasDependencies(Task t) {
         boolean result = false;
         for (LinkedList<Task> taskList : dependants) {
             if (taskList.getFirst() == t) {
