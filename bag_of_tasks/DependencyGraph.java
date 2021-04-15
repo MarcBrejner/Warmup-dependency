@@ -15,6 +15,11 @@ public class DependencyGraph {
     }
 
     public synchronized void addDependency(Task dependant, Task[] dependencies) {
+        if(dependencyMap.containsKey(dependant)){
+            System.out.println("Duplicate task dependency entry");
+            return;
+        }
+
         Set dependencySet = new HashSet<Task>();
         dependencySet.addAll(Arrays.asList(dependencies));
         dependencyMap.put(dependant,dependencySet);

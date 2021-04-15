@@ -30,9 +30,7 @@ class userProgram {
             } catch (Exception e) {
                 System.out.print(e);
             }
-
         }
-
     }
 
     public static boolean isInt(String input) {
