@@ -13,9 +13,7 @@ public abstract class Task<T> implements Callable<T>, Runnable {
           r = call();
           setResult(r);
         } catch(Exception e){
-            errorMsg = "This task failed: " + e;
-            isDone = true;
-            return;
+            setFailure(e);
         }
     }
 
@@ -41,4 +39,14 @@ public abstract class Task<T> implements Callable<T>, Runnable {
         isDone = true;
         notifyAll();
     }
+
+    public synchronized void setFailure(Exception e){
+        if(isDone){
+            return;
+        }
+        this.errorMsg = "Task failed with: "+e;
+        isDone = true;
+        notifyAll();
+    }
+
 }

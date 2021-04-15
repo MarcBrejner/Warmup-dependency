@@ -6,11 +6,15 @@ class userProgram {
         int primesToFind;
         List<Task> futures = new ArrayList<Task>(){};
 
-        BagOfTasks bag = new BagOfTasks(1);
+        BagOfTasks bag = new BagOfTasks(3);
 
         Task t1 = new primeTask(1);
         Task t2 = new primeTask(2);
         Task t3 = new primeTask(3);
+
+        futures.add(t1);
+        futures.add(t2);
+        futures.add(t3);
 
         Task[] t1Deps = {};
         Task[] t2Deps = {t1};
@@ -20,7 +24,7 @@ class userProgram {
         bag.submitTask(t3,t3Deps);
         bag.submitTask(t1);
 
-        /*for (Task t : futures) {
+        for (Task t : futures) {
             try {
                 System.out.println("The result is: " + t.getResult());
             } catch (Exception e) {
@@ -28,7 +32,7 @@ class userProgram {
             }
 
         }
-        */
+
     }
 
     public static boolean isInt(String input) {
@@ -43,17 +47,16 @@ class userProgram {
 }
 
 class primeTask extends Task {
-    int numberToFind;
+    public int numberToFind;
 
     public primeTask(int numberToFind){
         this.numberToFind = numberToFind;
     }
 
     public Integer call() throws InterruptedException{
-        if(numberToFind == 1){
+        if(numberToFind <= 2){
             Thread.sleep(1000);
         }
-        System.out.println(numberToFind);
         return numberToFind;
     }
 

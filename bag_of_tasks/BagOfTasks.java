@@ -8,9 +8,7 @@ public class BagOfTasks {
     }
 
     public void submitTask(Task task, Task[] deps){
-        System.out.println("Submitting");
         bag.addTask(task, deps);
-        System.out.println("Submitted");
     }
 
     public void submitTask(Task task){

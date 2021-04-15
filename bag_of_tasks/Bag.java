@@ -5,14 +5,14 @@ import java.util.concurrent.*;
 
 class Bag {
 
-    protected Graph dependencies;
+    protected DependencyGraph dependencies;
     private BlockingQueue<Task> taskBag;
     private List<Worker> workers;
 
     protected Bag(int numberOfWorkers){
         this.taskBag = new LinkedBlockingQueue<Task>(){};
         this.workers = new ArrayList<Worker>(){};
-        this.dependencies = new Graph();
+        this.dependencies = new DependencyGraph(taskBag);
         for (int i = 0; i < numberOfWorkers; ++i) {
             Worker worker = new Worker(this);
             worker.start();
@@ -21,10 +21,7 @@ class Bag {
     }
 
     protected void addTask(Task task, Task[] deps) {
-        try {
-            taskBag.put(task);
-            dependencies.addDependency(task, deps);
-        } catch (InterruptedException e) {}
+        dependencies.addDependency(task, deps);
     }
 
     protected void addTask(Task task){
@@ -35,22 +32,13 @@ class Bag {
 
     protected Task getTask() {
         Task task = null;
-        try {
-            while(true) {
-                task = taskBag.take();
-                if (dependencies.hasDependencies(task)) {
-                    Thread.sleep(100);
-                    System.out.println("didn't work");
-                    taskBag.put(task);
-                }else{
-                    break;
-                }
-            }
-        } catch (InterruptedException e) {}
+        try{
+            task = taskBag.take();
+        }catch(InterruptedException e){
 
+        }
         return task;
     }
-
 }
 
 class Worker extends Thread {
@@ -63,12 +51,12 @@ class Worker extends Thread {
     public void run() {
         while (true) {
             Task task = bag.getTask();
-
-            System.out.println("Started working on a task");
-
             task.run();
-            System.out.println("Finished working on a task");
-            bag.dependencies.removeTask(task);
+            try {
+                bag.dependencies.removeTask(task);
+            }catch(InterruptedException e){
+
+            }
 
         }
     }
