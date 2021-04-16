@@ -38,18 +38,26 @@ public class DependencyGraph {
     public synchronized void removeTask(Task task) throws InterruptedException{
 
         if(!inverseMap.containsKey(task)){
-            return;
+            return; //If no key task in InverseMap, nothing depends on task, therefore return
         }
 
-        for(Task t : inverseMap.get(task)){
-            dependencyMap.get(t).remove(task);
-            if(dependencyMap.get(t).isEmpty()){
-                taskBag.put(t);
+        for(Task t : inverseMap.get(task)){     //For each Task t in the set of tasks that depends on task.
+            dependencyMap.get(t).remove(task);  //Remove the task from the set of dependencies mapped to task t.
+
+            try{
+                t.setParameters(task.getResult());
+            } catch(Exception e){
+                System.out.println("setParameter failed");
+            }
+
+            if(dependencyMap.get(t).isEmpty()){ //if any of the tasks that depended on task no longer has any dependencies
+                taskBag.put(t);                 //Add it to the taskBag for execution
             }
         }
-        inverseMap.remove(task);
-
+        inverseMap.remove(task); //Remove task from the inverseMap since nothing can depend on a task that has already been run.
     }
+
+
     /*
     public synchronized boolean hasDependencies(Task t) {
         boolean result = false;

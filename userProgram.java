@@ -8,21 +8,30 @@ class userProgram {
 
         BagOfTasks bag = new BagOfTasks(3);
 
-        Task t1 = new primeTask(1);
-        Task t2 = new primeTask(2);
-        Task t3 = new primeTask(3);
+        Task t1 = new squareTask(3);
+        Task t2 = new addToPreviousTask(2);
+        Task t3 = new addToPreviousTask(10);
+        Task t4 = new squareTask(2);
+        Task t5 = new dependentTask();
 
         futures.add(t1);
         futures.add(t2);
         futures.add(t3);
+        futures.add(t4);
+        futures.add(t5);
 
-        Task[] t1Deps = {};
         Task[] t2Deps = {t1};
-        Task[] t3Deps = {t2,t1};
+        Task[] t3Deps = {t2};
+        Task[] t4Deps = {t1,t2,t3};
+        Task[] t5Deps = {t1,t2,t3,t4};
 
         bag.submitTask(t2,t2Deps);
+        bag.submitTask(t5,t5Deps);
         bag.submitTask(t3,t3Deps);
+        bag.submitTask(t4,t4Deps);
         bag.submitTask(t1);
+
+
 
         for (Task t : futures) {
             try {
@@ -32,38 +41,41 @@ class userProgram {
             }
         }
     }
-
-    public static boolean isInt(String input) {
-        try {
-            Integer.parseInt(input);
-        } catch (NumberFormatException e) {
-            System.out.println("Please input a valid positive integer.");
-            return false;
-        }
-        return true;
-    }
 }
 
-class primeTask extends Task {
-    public int numberToFind;
+class squareTask extends Task {
+    public int numberToSquare;
 
-    public primeTask(int numberToFind){
-        this.numberToFind = numberToFind;
+    public squareTask(int numberToSquare){
+        this.numberToSquare = numberToSquare;
     }
 
     public Integer call() throws InterruptedException{
-        if(numberToFind <= 2){
-            Thread.sleep(1000);
-        }
-        return numberToFind;
-    }
-
-    public int getInput() {
-        return numberToFind;
+        Thread.sleep(1500);
+        return numberToSquare*numberToSquare;
     }
 }
 
+class addToPreviousTask extends Task {
+    public int numberToAdd;
 
+    public addToPreviousTask(int numberToAdd){
+        this.numberToAdd = numberToAdd;
+    }
+
+    public Integer call() throws InterruptedException{
+        int antecedents = (int) getParameters();
+        return numberToAdd+antecedents;
+    }
+}
+
+class dependentTask extends Task{
+
+    public String call() throws InterruptedException{
+        return "all other tasks are done";
+    }
+
+}
 
 
 

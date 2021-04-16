@@ -2,9 +2,11 @@ package bag_of_tasks;
 
 import java.util.concurrent.Callable;
 
-public abstract class Task<T> implements Callable<T>, Runnable {
+public abstract class Task<A,T> implements Callable<T>, Runnable {
     Boolean isDone = false;
     String errorMsg = null;
+
+    A parameters;
     T result;
 
     public void run(){
@@ -47,6 +49,14 @@ public abstract class Task<T> implements Callable<T>, Runnable {
         this.errorMsg = "Task failed with: "+e;
         isDone = true;
         notifyAll();
+    }
+
+    public A getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(A parameters) {
+        this.parameters = parameters;
     }
 
 }
