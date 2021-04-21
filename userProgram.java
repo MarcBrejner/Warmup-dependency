@@ -14,7 +14,7 @@ class userProgram {
         Task t4 = new squareTask(2);
         Task t5 = new addToPreviousTask(0);
         Task t6 = new dependentTask();
-        Task t7 = new divideTwoAndAdd();
+        Task t7 = new divideTwoAndAddOutString();
 
         futures.add(t1);
         futures.add(t2);
@@ -29,7 +29,7 @@ class userProgram {
         Task[] t4Deps = {t1,t2,t3};
         Task[] t5Deps = {t1,t2,t3,t4};
         Task[] t6Deps = {t1,t2,t3,t4,t5};
-        Task[] t7Deps = {t5,t1,t2,t6};
+        Task[] t7Deps = {t5,t1,t6,t6};
 
         bag.submitTask(t7,t7Deps);
         bag.submitTask(t2,t2Deps);
@@ -94,12 +94,12 @@ class dependentTask extends Task{
 
 }
 
-class divideTwoAndAdd extends Task {
+class divideTwoAndAddOutString extends Task {
 
-    public Integer call() throws InterruptedException{
-        int r = 0;
+    public String call() throws InterruptedException{
+        String r = "";
         try {
-            r =  (int) dependencies[0].getResult()/ (int) dependencies[1].getResult() + (int) dependencies[2].getResult();
+            r =  (int) dependencies[0].getResult()/ (int) dependencies[1].getResult() +" "+ (String) dependencies[2].getResult();
         } catch (Exception e){
             System.out.println("dividend failed");
         }
