@@ -14,7 +14,9 @@ public class DependencyGraph {
         this.taskBag = taskBag;
     }
 
-    public synchronized void addDependency(Task dependant, Task[] dependencies) {
+    public synchronized void addDependency(Task dependant) {
+        Task[] dependencies = dependant.getDependencies();
+
         if(dependencyMap.containsKey(dependant)){
             System.out.println("Duplicate task dependency entry");
             return;
@@ -43,12 +45,6 @@ public class DependencyGraph {
 
         for(Task t : inverseMap.get(task)){     //For each Task t in the set of tasks that depends on task.
             dependencyMap.get(t).remove(task);  //Remove the task from the set of dependencies mapped to task t.
-
-            try{
-                t.setParameters(task.getResult());
-            } catch(Exception e){
-                System.out.println("setParameter failed");
-            }
 
             if(dependencyMap.get(t).isEmpty()){ //if any of the tasks that depended on task no longer has any dependencies
                 taskBag.put(t);                 //Add it to the taskBag for execution

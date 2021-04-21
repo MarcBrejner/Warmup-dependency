@@ -12,21 +12,29 @@ class userProgram {
         Task t2 = new addToPreviousTask(2);
         Task t3 = new addToPreviousTask(10);
         Task t4 = new squareTask(2);
-        Task t5 = new dependentTask();
+        Task t5 = new addToPreviousTask(0);
+        Task t6 = new dependentTask();
+        Task t7 = new divideTwoAndAdd();
 
         futures.add(t1);
         futures.add(t2);
         futures.add(t3);
         futures.add(t4);
         futures.add(t5);
+        futures.add(t6);
+        futures.add(t7);
 
         Task[] t2Deps = {t1};
         Task[] t3Deps = {t2};
         Task[] t4Deps = {t1,t2,t3};
         Task[] t5Deps = {t1,t2,t3,t4};
+        Task[] t6Deps = {t1,t2,t3,t4,t5};
+        Task[] t7Deps = {t5,t1,t2,t6};
 
+        bag.submitTask(t7,t7Deps);
         bag.submitTask(t2,t2Deps);
         bag.submitTask(t5,t5Deps);
+        bag.submitTask(t6,t6Deps);
         bag.submitTask(t3,t3Deps);
         bag.submitTask(t4,t4Deps);
         bag.submitTask(t1);
@@ -59,12 +67,21 @@ class squareTask extends Task {
 class addToPreviousTask extends Task {
     public int numberToAdd;
 
+
     public addToPreviousTask(int numberToAdd){
+
         this.numberToAdd = numberToAdd;
     }
 
     public Integer call() throws InterruptedException{
-        int antecedents = (int) getParameters();
+        int antecedents = 0;
+        for(Task ant : dependencies){
+            try {
+                antecedents += (int) ant.getResult();
+            }catch(Exception e){
+                System.out.println("RIP");
+            }
+        }
         return numberToAdd+antecedents;
     }
 }
@@ -77,6 +94,18 @@ class dependentTask extends Task{
 
 }
 
+class divideTwoAndAdd extends Task {
+
+    public Integer call() throws InterruptedException{
+        int r = 0;
+        try {
+            r =  (int) dependencies[0].getResult()/ (int) dependencies[1].getResult() + (int) dependencies[2].getResult();
+        } catch (Exception e){
+            System.out.println("dividend failed");
+        }
+        return r;
+    }
+}
 
 
 

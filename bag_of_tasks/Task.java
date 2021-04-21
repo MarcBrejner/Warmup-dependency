@@ -6,8 +6,9 @@ public abstract class Task<A,T> implements Callable<T>, Runnable {
     Boolean isDone = false;
     String errorMsg = null;
 
-    A parameters;
-    T result;
+    protected Task[] dependencies;
+    //protected A parameters;
+    protected T result;
 
     public void run(){
         T r;
@@ -20,6 +21,7 @@ public abstract class Task<A,T> implements Callable<T>, Runnable {
     }
 
     public synchronized T getResult() throws Exception {
+
         while(!isDone){
             try{
                 wait();
@@ -51,12 +53,22 @@ public abstract class Task<A,T> implements Callable<T>, Runnable {
         notifyAll();
     }
 
-    public A getParameters() {
+    /*public A getParameters() {
         return parameters;
     }
 
     public void setParameters(A parameters) {
         this.parameters = parameters;
+    }
+
+     */
+
+    public Task[] getDependencies() {
+        return dependencies;
+    }
+
+    public void setDependencies(Task[] dependencies) {
+        this.dependencies = dependencies;
     }
 
 }

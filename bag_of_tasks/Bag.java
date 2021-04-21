@@ -21,7 +21,8 @@ class Bag {
     }
 
     protected void addTask(Task task, Task[] deps) {
-        dependencies.addDependency(task, deps);
+        task.setDependencies(deps);
+        dependencies.addDependency(task);
     }
 
     protected void addTask(Task task){
