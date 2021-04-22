@@ -5,24 +5,19 @@ import java.util.concurrent.*;
 
 class Bag {
 
-    protected DependencyGraph dependencies;
+    //protected DependencyGraph dependencies;
     private BlockingQueue<Task> taskBag;
     private List<Worker> workers;
 
     protected Bag(int numberOfWorkers){
         this.taskBag = new LinkedBlockingQueue<Task>(){};
         this.workers = new ArrayList<Worker>(){};
-        this.dependencies = new DependencyGraph(taskBag);
+        //this.dependencies = new DependencyGraph(taskBag);
         for (int i = 0; i < numberOfWorkers; ++i) {
             Worker worker = new Worker(this);
             worker.start();
             workers.add(worker);
         }
-    }
-
-    protected void addTask(Task task, Task[] deps) {
-        task.setDependencies(deps);
-        dependencies.addDependency(task);
     }
 
     protected void addTask(Task task){
@@ -53,11 +48,27 @@ class Worker extends Thread {
         while (true) {
             Task task = bag.getTask();
             task.run();
+            if (task.continueWithFlag) {
+                Task t = new Task() {
+                    @Override
+                    public Object call() throws Exception {
+                        return task.cwFunction.exec((int) task.getResult());
+                    }
+                };
+                t.run();
+                try {
+                    System.out.println("Continue with got: " + t.getResult());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            /*
             try {
                 bag.dependencies.removeTask(task);
             }catch(InterruptedException e){
 
             }
+            */
 
         }
     }

@@ -7,10 +7,6 @@ public class BagOfTasks {
         bag = new Bag(numberOfWorkers);
     }
 
-    public void submitTask(Task task, Task[] deps){
-        bag.addTask(task, deps);
-    }
-
     public void submitTask(Task task){
         bag.addTask(task);
     }

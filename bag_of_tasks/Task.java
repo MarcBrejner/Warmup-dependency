@@ -9,6 +9,8 @@ public abstract class Task<A,T> implements Callable<T>, Runnable {
     protected Task[] dependencies;
     //protected A parameters;
     protected T result;
+    protected boolean continueWithFlag = false;
+    protected continueWithInput cwFunction;
 
     public void run(){
         T r;
@@ -62,6 +64,16 @@ public abstract class Task<A,T> implements Callable<T>, Runnable {
     }
 
      */
+
+    public void continueWith(continueWithInput inputFunction) {
+        continueWithFlag = true;
+        cwFunction = inputFunction;
+    }
+
+    public interface continueWithInput {
+        int exec(int result);
+    }
+
 
     public Task[] getDependencies() {
         return dependencies;

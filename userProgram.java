@@ -8,7 +8,8 @@ class userProgram {
 
         BagOfTasks bag = new BagOfTasks(3);
 
-        Task t1 = new squareTask(3);
+        /*
+
         Task t2 = new addToPreviousTask(2);
         Task t3 = new addToPreviousTask(10);
         Task t4 = new squareTask(2);
@@ -39,7 +40,12 @@ class userProgram {
         bag.submitTask(t4,t4Deps);
         bag.submitTask(t1);
 
+         */
+        Task t1 = new squareTask(3);
+        t1.continueWith((result) -> 2+result);
 
+        futures.add(t1);
+        bag.submitTask(t1);
 
         for (Task t : futures) {
             try {
