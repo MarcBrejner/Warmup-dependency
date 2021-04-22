@@ -59,7 +59,6 @@ class squareTask extends Task {
     }
 
     public Integer call() throws InterruptedException{
-        Thread.sleep(1500);
         return numberToSquare*numberToSquare;
     }
 }
@@ -89,6 +88,7 @@ class addToPreviousTask extends Task {
 class dependentTask extends Task{
 
     public String call() throws InterruptedException{
+
         return "all other tasks are done";
     }
 
