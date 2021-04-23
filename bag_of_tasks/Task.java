@@ -7,7 +7,7 @@ public abstract class Task<A,T> implements Callable<T>, Runnable {
     String errorMsg = null;
 
     protected Task[] dependencies;
-    //protected A parameters;
+    protected A parameters;
     protected T result;
     protected boolean continueWithFlag = false;
     protected continueWithInput cwFunction;
@@ -59,22 +59,40 @@ public abstract class Task<A,T> implements Callable<T>, Runnable {
         return parameters;
     }
 
+
+
+     */
+
     public void setParameters(A parameters) {
         this.parameters = parameters;
     }
 
-     */
+    public synchronized Task continueWith(continueWithInput inputFunction) throws Exception{
+        Task sysTask = new Task() {
+            @Override
+            public Object call() throws Exception {
+                return inputFunction.exec(parameters);
+            }
+        };
 
-    public void continueWith(continueWithInput inputFunction) {
-        continueWithFlag = true;
-        cwFunction = inputFunction;
+        if(isDone){
+            sysTask.setParameters(getResult());
+            Bag.addTask(sysTask);
+        }else{
+            Bag.addContinuation(this, sysTask);
+        }
+
+        return sysTask;
+
+        //continueWithFlag = true;
+        //cwFunction = inputFunction;
     }
 
-    public interface continueWithInput {
-        int exec(int result);
+    public interface continueWithInput<T> {
+        T exec(T result);
     }
 
-
+    /*
     public Task[] getDependencies() {
         return dependencies;
     }
@@ -82,5 +100,7 @@ public abstract class Task<A,T> implements Callable<T>, Runnable {
     public void setDependencies(Task[] dependencies) {
         this.dependencies = dependencies;
     }
+
+     */
 
 }

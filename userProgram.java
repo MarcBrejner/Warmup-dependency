@@ -2,7 +2,7 @@ import bag_of_tasks.*;
 import java.util.*;
 
 class userProgram {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         int primesToFind;
         List<Task> futures = new ArrayList<Task>(){};
 
@@ -42,10 +42,13 @@ class userProgram {
 
          */
         Task t1 = new squareTask(3);
-        t1.continueWith((result) -> 2+result);
+
+        futures.add(t1.continueWith((result) -> 2+(int)result));
 
         futures.add(t1);
         bag.submitTask(t1);
+
+
 
         for (Task t : futures) {
             try {

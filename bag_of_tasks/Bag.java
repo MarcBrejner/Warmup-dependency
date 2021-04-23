@@ -6,12 +6,14 @@ import java.util.concurrent.*;
 class Bag {
 
     //protected DependencyGraph dependencies;
-    private BlockingQueue<Task> taskBag;
+    private static ConcurrentHashMap<Task,Task> continuations;
+    private static BlockingQueue<Task> taskBag;
     private List<Worker> workers;
 
     protected Bag(int numberOfWorkers){
         this.taskBag = new LinkedBlockingQueue<Task>(){};
         this.workers = new ArrayList<Worker>(){};
+        this.continuations = new ConcurrentHashMap<Task,Task>(){};
         //this.dependencies = new DependencyGraph(taskBag);
         for (int i = 0; i < numberOfWorkers; ++i) {
             Worker worker = new Worker(this);
@@ -20,7 +22,18 @@ class Bag {
         }
     }
 
-    protected void addTask(Task task){
+    protected static void addContinuation(Task task, Task sysTask){
+        continuations.put(task,sysTask);
+    }
+
+    protected void submitIfPresent(Task task) throws Exception{
+        if(continuations.containsKey(task)){
+            continuations.get(task).setParameters(task.getResult());
+            addTask(continuations.get(task));
+        }
+    }
+
+    protected static void addTask(Task task){
         try{
             taskBag.put(task);
         } catch(InterruptedException e){}
@@ -48,20 +61,13 @@ class Worker extends Thread {
         while (true) {
             Task task = bag.getTask();
             task.run();
-            if (task.continueWithFlag) {
-                Task t = new Task() {
-                    @Override
-                    public Object call() throws Exception {
-                        return task.cwFunction.exec((int) task.getResult());
-                    }
-                };
-                t.run();
-                try {
-                    System.out.println("Continue with got: " + t.getResult());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            try{
+                bag.submitIfPresent(task);
+            }catch(Exception e){
+
             }
+
+
             /*
             try {
                 bag.dependencies.removeTask(task);
