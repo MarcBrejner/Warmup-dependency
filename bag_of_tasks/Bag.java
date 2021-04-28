@@ -65,7 +65,7 @@ class Bag {
         return sysTask;
     }
 
-    public void submitIfReady(SystemTask sysTask, Task predecessor)throws Exception{
+    public synchronized void submitIfReady(SystemTask sysTask, Task predecessor)throws Exception{
         if(predecessor.isDone){
             sysTask.setParameter(predecessor.getID(),predecessor.getResult());
             addTask(sysTask);
@@ -74,7 +74,7 @@ class Bag {
         }
     }
 
-    public void submitIfReady(SystemTask sysTask, Task predecessor1, Task predecessor2)throws Exception{
+    public synchronized void submitIfReady(SystemTask sysTask, Task predecessor1, Task predecessor2)throws Exception{
         if(predecessor1.isDone && predecessor2.isDone){
             sysTask.setParameter(predecessor1.getID(),predecessor1.getResult());
             sysTask.setParameter(predecessor2.getID(),predecessor2.getResult());
@@ -115,4 +115,3 @@ class Worker extends Thread {
         }
     }
 }
-
