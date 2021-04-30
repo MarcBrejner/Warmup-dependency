@@ -43,6 +43,7 @@ class Bag {
                 return inputFunction.exec(parameter1);
             }
         };
+        sysTask.setType(SystemTaskType.CONTINUE);
         sysTask.setPredecessor_1_ID(predecessor.getID());
 
         submitIfReady(sysTask, predecessor);
@@ -57,6 +58,7 @@ class Bag {
                 return inputFunction.combine(parameter1, parameter2);
             }
         };
+        sysTask.setType(SystemTaskType.COMBINE);
         sysTask.setPredecessor_1_ID(predecessor1.getID());
         sysTask.setPredecessor_2_ID(predecessor2.getID());
 
@@ -70,7 +72,6 @@ class Bag {
             sysTask.setParameter(predecessor.getID(),predecessor.getResult());
             addTask(sysTask);
         }else{
-
             continuations.addContinuation(predecessor,sysTask);
         }
     }
@@ -91,8 +92,6 @@ class Bag {
             continuations.addContinuation(predecessor2,sysTask);
         }
     }
-
-
 }
 
 class Worker extends Thread {
@@ -110,11 +109,7 @@ class Worker extends Thread {
                 synchronized (bag) {
                     bag.continuations.releaseContinuations(task);
                 }
-            }catch(Exception e){
-
-            }
-
-
+            }catch(Exception e){}
         }
     }
 }

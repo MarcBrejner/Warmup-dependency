@@ -31,22 +31,9 @@ public class DependencyGraph {
         Set<SystemTask> continueSet = dependencyMap.remove(task);
         for(SystemTask continueTask : continueSet){
             continueTask.setParameter(task.getID(), task.getResult());
-            if(!containsSysTask(continueTask)){
+            if(continueTask.getIsReady()){
                 taskBag.add(continueTask);
             }
         }
-
     }
-
-    public Boolean containsSysTask(SystemTask sysTask){
-        Boolean b = false;
-        for(Map.Entry<Task, Set<SystemTask>> entry : dependencyMap.entrySet()) {
-            Set<SystemTask> set = entry.getValue();
-            if(set.contains(sysTask)){
-                b = true;
-            }
-        }
-        return b;
-    }
-
 }
