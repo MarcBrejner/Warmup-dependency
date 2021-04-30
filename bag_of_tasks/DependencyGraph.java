@@ -13,7 +13,7 @@ public class DependencyGraph {
         this.taskBag = taskBag;
     }
 
-    public synchronized void addContinuation(Task dependant, SystemTask continueTask) {
+    public void addContinuation(Task dependant, SystemTask continueTask) {
         if (dependencyMap.containsKey(dependant)) {
             dependencyMap.get(dependant).add(continueTask);
         } else {
@@ -23,7 +23,7 @@ public class DependencyGraph {
         }
     }
 
-    public synchronized void releaseContinuations(Task task) throws InterruptedException, Exception {
+    public void releaseContinuations(Task task) throws InterruptedException, Exception {
         if (!dependencyMap.containsKey(task)) {
             return; //If no key task in InverseMap, nothing depends on task, therefore return
         }
@@ -37,6 +37,7 @@ public class DependencyGraph {
         }
 
     }
+
     public Boolean containsSysTask(SystemTask sysTask){
         Boolean b = false;
         for(Map.Entry<Task, Set<SystemTask>> entry : dependencyMap.entrySet()) {

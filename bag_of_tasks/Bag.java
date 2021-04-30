@@ -66,23 +66,24 @@ class Bag {
     }
 
     public synchronized void submitIfReady(SystemTask sysTask, Task predecessor)throws Exception{
-        if(predecessor.isDone){
+        if(predecessor.getIsDone()){
             sysTask.setParameter(predecessor.getID(),predecessor.getResult());
             addTask(sysTask);
         }else{
+
             continuations.addContinuation(predecessor,sysTask);
         }
     }
 
     public synchronized void submitIfReady(SystemTask sysTask, Task predecessor1, Task predecessor2)throws Exception{
-        if(predecessor1.isDone && predecessor2.isDone){
+        if(predecessor1.getIsDone() && predecessor2.getIsDone()){
             sysTask.setParameter(predecessor1.getID(),predecessor1.getResult());
             sysTask.setParameter(predecessor2.getID(),predecessor2.getResult());
             addTask(sysTask);
-        }else if(predecessor1.isDone){
+        }else if(predecessor1.getIsDone()){
             sysTask.setParameter(predecessor1.getID(),predecessor1.getResult());
             continuations.addContinuation(predecessor2,sysTask);
-        }else if(predecessor2.isDone){
+        }else if(predecessor2.getIsDone()){
             sysTask.setParameter(predecessor2.getID(),predecessor2.getResult());
             continuations.addContinuation(predecessor1,sysTask);
         }else{
@@ -106,7 +107,9 @@ class Worker extends Thread {
             Task task = bag.getTask();
             task.run();
             try{
-                bag.continuations.releaseContinuations(task);
+                synchronized (bag) {
+                    bag.continuations.releaseContinuations(task);
+                }
             }catch(Exception e){
 
             }

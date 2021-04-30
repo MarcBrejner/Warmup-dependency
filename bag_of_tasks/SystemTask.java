@@ -10,6 +10,8 @@ public abstract class SystemTask<A,T> extends Task<T> {
     A parameter1;
     A parameter2;
 
+    boolean isReady = false;
+
     public void setParameter(UUID predecessorID, A parameter){
         if(predecessorID == predecessor_1_ID){
             this.parameter1 = parameter;

@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 public abstract class Task<T> implements Callable<T>, Runnable {
 
     UUID ID;
+
     Boolean isDone = false;
     String errorMsg = null;
     protected T result;
@@ -62,4 +63,7 @@ public abstract class Task<T> implements Callable<T>, Runnable {
         return ID;
     }
 
+    public Boolean getIsDone() {
+        return isDone;
+    }
 }
